@@ -1,37 +1,35 @@
+from functools import lru_cache
+
+
 class Solution:
-    MOD = 10**9 + 7
 
     def checkRecord(self, n: int) -> int:
-        self.dp = [[[0 for _ in range(3)] for _ in range(2)] for _ in range(n + 1)]
-        return self.helper(n, 0, 0)
+        MOD = 10**9 + 7
 
-    def helper(self, n: int, counterA: int, counterL: int) -> int:
-        if n == 0:
-            return 1
+        # Use @lru_cache to memorize results
+        @lru_cache(None)
+        def helper(days_left: int, absents: int, lates: int) -> int:
+            if days_left == 0:
+                return 1
 
-        # Check if the result is already computed
-        if self.dp[n][counterA][counterL] != 0:
-            return self.dp[n][counterA][counterL]
+            result = 0
 
-        # initial result
-        result = 0
+            # Case 1: Add 'A' (reset lates to 0)
+            result += helper(days_left - 1, absents, 0)
 
-        # Case 1: Add 'P' (Present) to the sequence
-        result = (result + self.helper(n - 1, counterA, 0)) % self.MOD
+            # Case 2 : Add 'A' (increment absents if less than 1)
+            if absents < 1:
+                result += helper(days_left - 1, absents + 1, 0)
 
-        # Case 2: Add 'A' (Absent) if less than 1 'A' so far
-        if counterA < 1:
-            result = (result + self.helper(n - 1, counterA + 1, 0)) % self.MOD
+            # Case 3: Add 'L' (increment lates if less than 2)
+            if lates < 2:
+                result += helper(days_left - 1, absents, lates + 1)
 
-        # Case 3: Add 'L' (Late) if less than 2 consecutive 'L's so far
-        if counterL < 2:
-            result = (result + self.helper(n - 1, counterA, counterL + 1)) % self.MOD
+            return result % MOD
 
-        # Store the result in the DP array
-        self.dp[n][counterA][counterL] = result
-        return result
+        return helper(n, 0, 0)
 
 
 solution = Solution()
-result = solution.checkRecord(2)
+result = solution.checkRecord(1)
 print(result)
