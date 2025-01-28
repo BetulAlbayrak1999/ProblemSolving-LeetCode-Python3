@@ -5,7 +5,7 @@ class TreeNode:
         self.right=right
 
 class Solution:
-    def leafSimiler(self, root1: TreeNode, root2: TreeNode)-> bool:
+    def leafSimilar(self, root1: TreeNode, root2: TreeNode)-> bool:
         def getLeaves(root: TreeNode):
             if not root:
                 return []
